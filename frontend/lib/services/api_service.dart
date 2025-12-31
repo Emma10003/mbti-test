@@ -6,6 +6,8 @@ import 'package:frontend/models/question_model.dart';
 import 'package:frontend/models/result_model.dart';
 import 'package:frontend/models/test_request_model.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/mbti_type_model.dart';
 /*
   final에 비해서 const가 가벼움
   - 단기적으로 값 변경하지 못하도록 상수처리 할 때 = final
@@ -120,6 +122,31 @@ class ApiService {
     }
   }
 
+  // 모든 MBTI 유형 조회
+  static Future<List<MbtiType>> getAllMbtiTypes() async {
+    final res = await http.get(Uri.parse('$url/types'));
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(res.body);
+      return jsonList.map((json) => MbtiType.fromJson(json)).toList();
+    } else {
+      throw Exception('MBTI 유형 불러오기 실패');
+    }
+  }
+
+// 특정 MBTI 유형 조회
+  static Future<MbtiType> getMbtiTypeByCode(String typeCode) async {
+    final res = await http.get(Uri.parse('$url/types/$typeCode'));
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(res.body);
+      return MbtiType.fromJson(json);
+    } else {
+      throw Exception('MBTI 유형 조회 실패');
+    }
+  }
+
+
   // 사용자별 결과 조회 - ㅇㅇㅇ 이름에 해당하는 모든 데이터 목록 조회
   /*
   사용자별 결과 조회
@@ -142,6 +169,9 @@ class ApiService {
       throw Exception('MBTI 유형 불러오기 실패');
     }
   }
+
+
+
 }
 
 

@@ -108,6 +108,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Text("이전 결과 보기")
               )
+            ),
+
+            SizedBox(height: 10),
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: ElevatedButton(
+                  onPressed: () => context.go(/* TODO: 경로 작성 */),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[300],
+                      foregroundColor: Colors.black87
+                  ),
+                  child: Text("MBTI 유형 보기")),
             )
           ],
         ),

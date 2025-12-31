@@ -53,6 +53,12 @@ final GoRouter _router = GoRouter(
             return ResultDetailScreen(userName: userName,);
           }
       ),
+
+      // MBTI 유형 보기
+      GoRoute(
+          path: '/types',
+          builder: (context, state) => MbtiTypesScreen(),
+      )
     ]
 );
 
