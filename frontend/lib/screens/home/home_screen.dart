@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 300,
               height: 50,
               child: ElevatedButton(
-                  onPressed: () => context.go(/* TODO: 경로 작성 */),
+                  onPressed: () => context.go('/types'),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[300],
                       foregroundColor: Colors.black87

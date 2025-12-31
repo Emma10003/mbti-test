@@ -140,7 +140,7 @@ class ApiService {
 
     if(res.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(res.body);
-      return MbtiType.fromJson(json);
+      return MbtiType.fromJson(jsonData);
     } else {
       throw Exception('MBTI 유형 조회 실패');
     }
