@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.mbti.result.model.mapper.ResultMapper">
+    <select id="selectAll" resultType="Result">
+        SELECT * FROM mbti_results ORDER BY created_at DESC
+    </select>
+
+    <select id="selectById" resultType="Result">
+        SELECT * FROM mbti_results WHERE id = #{id}
+    </select>
+
+    <select id="selectByIdWithType" resultType="Result">
+        SELECT
+            r.*,
+            t.type_name,
+            t.description,
+            t.characteristics,
+            t.strengths,
+            t.weaknesses
+        FROM mbti_results r
+                 JOIN mbti_types t ON r.result_type = t.type_code
+        WHERE r.id = #{id}
+    </select>
+
+    <select id="selectByUserName" resultType="Result">
+        SELECT * FROM mbti_results WHERE user_name = #{userName} ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert" parameterType="Result"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mbti_results (user_name, result_type, e_score, i_score, s_score, n_score, t_score, f_score, j_score, p_score)
+        VALUES (#{userName}, #{resultType}, #{eScore}, #{iScore}, #{sScore}, #{nScore}, #{tScore}, #{fScore}, #{jScore}, #{pScore})
+    </insert>
+
+    <update id="update" parameterType="Result">
+        UPDATE mbti_results
+        SET user_name = #{userName},
+            result_type = #{resultType},
+            e_score = #{eScore},
+            i_score = #{iScore},
+            s_score = #{sScore},
+            n_score = #{nScore},
+            t_score = #{tScore},
+            f_score = #{fScore},
+            j_score = #{jScore},
+            p_score = #{pScore}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM mbti_results WHERE id = #{id}
+    </delete>
+
+</mapper>

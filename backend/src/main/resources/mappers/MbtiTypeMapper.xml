@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.mbti.mbtitype.model.mapper.MbtiTypeMapper">
+    <select id="selectAll" resultType="MbtiType">
+        SELECT *
+        FROM mbti_types
+        ORDER BY type_code
+    </select>
+
+    <select id="selectById" resultType="MbtiType">
+        SELECT *
+        FROM mbti_types
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByTypeCode" resultType="MbtiType">
+        SELECT *
+        FROM mbti_types
+        WHERE type_code = #{typeCode}
+    </select>
+
+    <insert id="insert" parameterType="MbtiType"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO mbti_types (type_code, type_name, description, characteristics, strengths, weaknesses)
+        VALUES (#{typeCode}, #{typeName}, #{description}, #{characteristics}, #{strengths}, #{weaknesses})
+    </insert>
+
+    <update id="update" parameterType="MbtiType">
+        UPDATE mbti_types
+        SET type_code       = #{typeCode},
+            type_name       = #{typeName},
+            description     = #{description},
+            characteristics = #{characteristics},
+            strengths       = #{strengths},
+            weaknesses      = #{weaknesses}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM mbti_types
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.mbti.question.model.mapper.QuestionMapper">
+    <select id="selectAll" resultType="Question">
+        SELECT * FROM mbti_questions ORDER BY question_number
+    </select>
+
+    <select id="selectById" resultType="Question">
+        SELECT * FROM mbti_questions WHERE id = #{id}
+    </select>
+
+    <select id="selectByDimension" resultType="Question">
+        SELECT * FROM mbti_questions WHERE dimension = #{dimension} ORDER BY question_number
+    </select>
+
+    <insert id="insert" parameterType="Question" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO mbti_questions (question_number, question_text, dimension, option_a, option_b, option_a_type, option_b_type)
+        VALUES (#{questionNumber}, #{questionText}, #{dimension}, #{optionA}, #{optionB}, #{optionAType}, #{optionBType})
+    </insert>
+
+    <update id="update" parameterType="Question">
+        UPDATE mbti_questions
+        SET question_number = #{questionNumber},
+            question_text = #{questionText},
+            dimension = #{dimension},
+            option_a = #{optionA},
+            option_b = #{optionB},
+            option_a_type = #{optionAType},
+            option_b_type = #{optionBType}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM mbti_questions WHERE id = #{id}
+    </delete>
+
+</mapper>
+

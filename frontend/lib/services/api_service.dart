@@ -1,0 +1,211 @@
+
+import 'dart:convert';
+
+import 'package:frontend/models/answer_model.dart';
+import 'package:frontend/models/question_model.dart';
+import 'package:frontend/models/result_model.dart';
+import 'package:frontend/models/test_request_model.dart';
+import 'package:http/http.dart' as http;
+/*
+  final에 비해서 const가 가벼움
+  - 단기적으로 값 변경하지 못하도록 상수처리 할 때 = final
+  - 장기적으로 전체 공유하는 상수처리 값 = const
+
+  const = 어플 전체적으로 사용되는 상수 명칭
+  final = 특정 기능이나 화면에서만 부분적으로 사용되는 상수 명칭
+  */
+
+
+// models 에 작성한 자료형, 변수명을 활용하여 데이터 타입 지정.
+class ApiService {
+
+  static const String url = 'http://localhost:8080/api/mbti';
+
+  // 백엔드 컨트롤러에서 질문 가져오기
+  // 보통 백엔드나 외부 api 데이터를 가져올 때 자료형으로 Future 을 사용
+  // - 특정 자료형을 감싸서 사용
+  static Future<List<Question>> getQuestions() async {
+    final res = await http.get(Uri.parse('$url/questions'));
+
+    /*
+    http://localhost:8080/api/mbti 로 접속했을 때 나오는 데이터
+      res.body = 백엔드에서 위 주소로 전달받은 JSON 문자열 -> 주소로 가져오는 데이터는 한 줄로 가져온다.
+      ‘[{ “id” : 1, “questionText” : “질문1”,  “optionA” : “A”,  “optionB” : “B” }, { “id” : 2, “questionText” : “질문2”,  “optionA” : “A”,  “optionB” : “B” }, { “id” : 3, “questionText” : “질문3”,  “optionA” : “A”,  “optionB” : “B” },]’
+
+     json.decode()                            = 한 줄로 되어있는 JSON 문자열 데이터를 Dart 형식의 객체로 변환해서 사용.
+     .map((json) => Question.fromJson(json))  = 변환을 할 때 각 데이터 하나씩 json 이라는 변수명에 담아서
+                                                         Question 객체로 변환하는 작업을 첫 데이터부터 마지막 데이터까지 모두 수행.
+     .toList()                                = map 으로 출력된 결과를 List 목록 형태로 변환하여 사용.
+     */
+    
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(res.body);
+      return jsonList.map((json) => Question.fromJson(json)).toList();
+    } else {
+      throw Exception('불러오기 실패');
+    }
+  }
+
+  // 결과 제출하기 post
+  /*
+  Dart = JavaScript + Java + C++ + SQL
+
+  Map<int, String> answers = 소비자가 작성한 원본 데이터가 존재.
+                             Map<int, String> answers = {
+                                1: 'A',
+                                2: 'B',
+                                3: 'A',
+                                ...
+                             }
+
+  answers.entries         = Map을 MapEntry 리스트로 변환한 것.
+                     결과 = [
+                              MapEntry(key: 1, value: 'A'),
+                              MapEntry(key: 2, value: 'B'),
+                              MapEntry(key: 3, value: 'A'),
+                              ...
+                            ]
+  .map((en) {                      = 각 MapEntry를 TestAnswer로 변환
+      return TestAnswer(
+        questionId: en.key,          // 1, 2, 3
+        selectedOption: en.value     // 'A', 'B', 'A'
+      );
+    })
+  .toList()                       = 최종 결과로 List 형태로 변환
+
+  MapEntry : Map의 키-값 쌍을 나타내는 객체.
+  entries  : entry의 반복문 형태
+  
+  현재 우리가 작성한 백엔드에서 위와 같은 형식을 유지하고 있기 때문에
+  만약에 TestAnswer와 같은 응답 전용 객체를 Java에서 사용하지 않는다면 
+  entries 작업까지 할 필요는 없음.
+  -----------------------------------------
+  [ Entry = DB 하나의 컬럼에 존재하는 데이터. ]
+  사전 한 권     = Map
+  사전의 각 항목 = Entry
+
+  // 책 사전 내부에 존재하는 예시 데이터
+  키         값
+  apple  -> 사과      = entry 1개
+  banana -> 바나나    = entry 1개
+  cherry -> 체리      = entry 1개
+  총 entry 개체 : 3개
+
+  [ Entries = 모든 entry 항목 종합 ]
+  모든 키-값 쌍들
+  전화번호부 한 줄 :
+    이름(key) : 홍길동
+    전화번호(value) : 010-1234-5678
+
+  -> entry 1개 = 객체 1개의 데이터.
+
+   */
+  static Future<Result> submitTest(String userName, Map<int, String> answers) async {
+    List<TestAnswer> answerList = answers.entries.map((en) {
+      return TestAnswer(questionId: en.key, selectedOption: en.value);
+    }).toList();
+
+    TestRequest request = TestRequest(userName: userName, answers: answerList);
+
+    final res = await http.post(
+        Uri.parse('$url/submit'),
+        headers: {'Content-Type':'application/json'},
+        body: json.encode(request.toJson())
+    );
+    if(res.statusCode == 200){
+      Map<String, dynamic> jsonData = json.decode(res.body);
+      return json.decode(res.body);
+    } else {
+      throw Exception('제출 실패');
+    }
+  }
+
+  // 사용자별 결과 조회 - ㅇㅇㅇ 이름에 해당하는 모든 데이터 목록 조회
+  /*
+  사용자별 결과 조회
+  GET /api/mbti/results?userName={userName}
+
+  Dart 는 변수명 뒤에 하위변수나 하위 기능이 존재하지 않을 경우
+  - $변수명 - 중괄호{} 없이 작성 가능.
+  변수명.세부변수명 / 변수명.세부기능() 과 같이 존재할 경우
+  - ${변수명.세부변수명} / ${변수명.세부기능()} - 중괄호{}로 감싸서 작성.
+   */
+  //
+  static Future<List<Result>> getResultsByUserName(String userName) async {
+    final res = await http.get(Uri.parse('$url/results?userName=$userName'));
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(res.body);
+      return jsonList.map((json) => Result.fromJson(json)).toList();
+    } else {
+      // constants 에서 지정한 에러 타입으로 교체
+      throw Exception('MBTI 유형 불러오기 실패');
+    }
+  }
+}
+
+
+/*
+  Map<String, dynamic> jsonData = json.decode(res.body);
+  String = 키 명칭들은 문자열로 확정!
+  <String      ,  dynamic>
+  "id"               1,             // int
+  "userName"       "홍길동",         // String
+  "resultType"     "ENFP",          // String
+  "isActive"        true,           // boolean
+  "createdAt"       null,           // null
+  "scores"       [2, 3, 1, ...],    // List
+
+  Q. dynamic 대신에 Object 사용하면 안 되나요?
+  A. 안 됨.
+     Object 는 null 불가능!
+        └───── Dart에서 Object 타입은 null 불가능, 컴파일에서는 연산 불가. (2.1.2 부터 null 사용 금지이고 dynamic 써라 권장)
+        └───── Java에서 Object 타입은 null 가능 ^-^...
+     dynamic은 null 가능!
+        └───── 컴파일에서는 우선 타입이 무엇인지 ???? 상태로 일단 OK
+            └───── 실행하면서 타입이 맞지 않으면 에러 발생.
+ */
+
+
+// -----------------------------------------------------------------------------
+class DynamicApiService {
+
+  static const String url = 'http://localhost:8080/api/mbti';
+
+  // 백엔드 컨트롤러에서 질문 가져오기
+  // 보통 백엔드나 외부 api 데이터를 가져올 때 자료형으로 Future 을 사용
+  // - 특정 자료형을 감싸서 사용
+  static Future<List<Question>> getQuestions() async {
+    final res = await http.get(Uri.parse('$url/questions'));
+
+    if(res.statusCode == 200) {
+      return json.decode(res.body);
+    } else {
+      throw Exception('불러오기 실패');
+    }
+  }
+
+  // 결과 제출하기 post
+  static Future<Map<String,dynamic>> submitTest(String userName, Map<int, String> answers) async {
+    List<Map<String, dynamic>> answerList = [];
+    answers.forEach((questionId, option) {
+      answerList.add({
+        'questionId' : questionId,
+        'selectedOption':option
+      });
+    });
+    final res = await http.post(
+        Uri.parse('$url/submit'),
+        headers: {'Content-Type':'application/json'},
+        body: json.encode({
+          'userName':userName,
+          'answers':answerList
+        })
+    );
+    if(res.statusCode == 200 ){
+      return json.decode(res.body);
+    } else {
+      throw Exception('제출 실패');
+    }
+  }
+}
