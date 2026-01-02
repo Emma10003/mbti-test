@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mbti.user.model.mapper.UserMapper">
+
+    <!-- 모든 사용자 조회 -->
+    <select id="selectAll" resultType="User">
+        SELECT id, user_name, created_at, last_login
+        FROM users
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- ID로 사용자 조회 -->
+    <select id="selectById" resultType="User">
+        SELECT id, user_name, created_at, last_login
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <!-- 사용자명으로 조회 -->
+    <select id="selectByUserName" resultType="User">
+        SELECT id, user_name, created_at, last_login
+        FROM users
+        WHERE user_name = #{userName}
+    </select>
+
+    <!-- 사용자 등록 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (user_name, created_at)
+        VALUES (#{userName}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- 마지막 로그인 시간 업데이트 -->
+    <update id="updateLastLogin">
+        UPDATE users
+        SET last_login = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <!-- 사용자 삭제 -->
+    <delete id="delete">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+</mapper>

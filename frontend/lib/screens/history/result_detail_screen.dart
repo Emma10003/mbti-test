@@ -110,6 +110,8 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                   trailing: Icon(Icons.arrow_forward_ios),
                   // 한 줄의 어떤 곳을 선택하더라도 세부 정보를 확인할 수 있는 모달팝업 띄우기
                   // ex) 예약 세부내용이 담긴 모달창
+                  // 공유하기와 같은 세부 기능을 넣을 수 있지만
+                  // 되도록이면 위젯으로 따로 생성 후 기능 설정하기
                   onTap: () {
                     showDialog(
                         context: context,
@@ -117,7 +119,10 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                           title: Text(r.resultType),
                           content: Text('${r.typeName ?? r.resultType} \n\n ${r.description ?? "정보없음"}'),
                           actions: [
-                            TextButton(onPressed: () => Navigator.pop(context), child: Text('닫기'))
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('닫기'),
+                            ),
                           ],
                         )
                     );
