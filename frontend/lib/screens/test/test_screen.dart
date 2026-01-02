@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/api_service.dart';
+import 'package:frontend/widgets/error_view.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/question_model.dart';
+import '../../widgets/loading_view.dart';
 
 class TestScreen extends StatefulWidget {
   final String userName;
@@ -16,10 +18,11 @@ class _TestScreenState extends State<TestScreen> {
   // 변수 선언
   // 데이터 선언
   // 기능 선언
-  List<Question> questions = [];  // 백엔드에서 가져온 질문들이 들어갈 배열
+  List<Question> questions = []; // 백엔드에서 가져온 질문들이 들어갈 배열
   int currentQuestion = 0;       // 인덱스가 0부터 시작하기 때문에 0으로 설정
   Map<int, String> answers = {}; // 답변 저장 {질문번호: 'A' or 'B'}
   bool isLoading = true;         // 백엔드 데이터를 가지고 올 동안 잠시 대기하는 로딩중
+  String? errorMessage;          //
 
   // ctrl + O
   @override
@@ -36,10 +39,12 @@ class _TestScreenState extends State<TestScreen> {
           setState(() {
             questions = data;
             isLoading = false;
+            errorMessage = null;  // 데이터 무사히 들고왔으면 null 처리.
           });
     } catch (e) {
       setState(() {
         isLoading = false;
+        errorMessage = "질문을 불러오는데 실패했습니다.";
       });
     }
   }
@@ -91,13 +96,26 @@ class _TestScreenState extends State<TestScreen> {
     try {
       final result = await ApiService.submitTest(widget.userName, answers);
 
-      // mounted : 화면이 존재한다면 가능
+      // mounted : 화면이 존재한다면 기능
+      if(mounted) {
+        context.go("/result", extra: result);
+      }
+/*
       if(mounted) {
         context.go("/result", extra: {
           'userName': widget.userName,
           'resultType': result.resultType,
+          'eScore': result.eScore,
+          'iScore': result.iScore,
+          'sScore': result.sScore,
+          'nScore': result.nScore,
+          'tScore': result.tScore,
+          'fScore': result.fScore,
+          'jScore': result.jScore,
+          'pScore': result.pScore,
         });
       }
+      */
 /*
       showDialog(
           context: context,
@@ -117,7 +135,7 @@ class _TestScreenState extends State<TestScreen> {
 
     } catch(e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('제출 실패했습니다.'))
+        SnackBar(content: Text('제출 실패했습니다. $e'))
       );
     }
   }
@@ -156,7 +174,18 @@ class _TestScreenState extends State<TestScreen> {
     if(isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text('불러오는 중...')),
-        body: Center(child: CircularProgressIndicator())
+        body: LoadingView(message: '질문을 불러오는 중입니다.')
+      );
+    }
+
+    if(errorMessage != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("오류 발생"),
+        ),
+        // message: 현재 페이지에서 작성되어 있는 에러 메세지를 전달
+        // onRetry: 클라이언트가 다시 시도 버튼을 클릭하면 loadQuestions 기능 재실행
+        body: ErrorView(message: errorMessage!, onRetry: loadQuestions),
       );
     }
 

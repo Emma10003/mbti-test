@@ -7,6 +7,8 @@ import 'package:frontend/screens/test/test_screen.dart';
 import 'package:frontend/screens/types/mbti_type_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import 'models/result_model.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -37,11 +39,25 @@ final GoRouter _router = GoRouter(
       GoRoute(
           path: '/result',
           builder: (context, state) {
-            final data = state.extra as Map<String, dynamic>;
+            // final data = state.extra as Map<String, dynamic>;
+            final result = state.extra as Result;
+            return ResultScreen(
+              result: result,
+            );
+              /*
             return ResultScreen(
                 userName: data['userName']!,
-                resultType: data['resultType']!
+                resultType: data['resultType']!,
+                eScore: data['eScore']!,
+                iScore: data['iScore']!,
+                sScore: data['sScore']!,
+                nScore: data['nScore']!,
+                tScore: data['tScore']!,
+                fScore: data['fScore']!,
+                jScore: data['jScore']!,
+                pScore: data['pScore']!,
             );
+             */
           }
       ),
 

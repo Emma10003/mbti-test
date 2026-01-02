@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/result_model.dart';
 import 'package:frontend/services/api_service.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../widgets/loading_view.dart';
 /*
 * 과제: StatelessWidget 로 변경하기
+*      ErrorView 추가, errorMessage = "검사 기록을 불러오는데 실패했습니다." or null
 * */
 class ResultDetailScreen extends StatefulWidget {
   /*
@@ -80,7 +83,7 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
             icon: Icon(Icons.arrow_back)),
       ),
       body: isLoading
-        ? Center(child: CircularProgressIndicator())
+        ?  LoadingView(message: '결과를 불러오는 중입니다.')
         : results.isEmpty
           ? Center(
               child: Text('검사 기록이 없습니다.', style: TextStyle(fontSize: 18))

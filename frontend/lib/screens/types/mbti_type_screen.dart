@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/mbti_type_model.dart';
 import 'package:frontend/services/api_service.dart';
+import 'package:frontend/widgets/loading_view.dart';
 import 'package:go_router/go_router.dart';
 
+/*
+* 과제: StatelessWidget 로 변경하기
+*      ErrorView 추가, errorMessage = "유형 정보를 불러오는데 실패했습니다." or null
+* */
 class MbtiTypesScreen extends StatefulWidget {
   const MbtiTypesScreen({super.key});
 
@@ -43,7 +48,7 @@ class _MbtiTypesScreenState extends State<MbtiTypesScreen> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? LoadingView(message: '유형을 불러오는 중입니다.')
           : types.isEmpty
           ? Center(child: Text('유형 정보가 없습니다'))
           : GridView.builder(
@@ -70,25 +75,23 @@ class _MbtiTypesScreenState extends State<MbtiTypesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          /* TODO: type.description이 null이 아니면 표시 */
                           if (type.description != null) ...[
                             Text('설명', style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(type.description!),
                             SizedBox(height: 10),
                           ],
-                          /* TODO: characteristics, strengths, weaknesses도 동일하게 작성 */
                           if (type.characteristics != null) ...[
-                            Text('설명', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('특징', style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(type.characteristics!),
                             SizedBox(height: 10),
                           ],
                           if (type.strengths != null) ...[
-                            Text('설명', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('강점', style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(type.strengths!),
                             SizedBox(height: 10),
                           ],
                           if (type.weaknesses != null) ...[
-                            Text('설명', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('약점', style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(type.weaknesses!),
                             SizedBox(height: 10),
                           ],
@@ -110,7 +113,6 @@ class _MbtiTypesScreenState extends State<MbtiTypesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      /* TODO: type의 typeCode 표시 */
                       type.typeCode,
                       style: TextStyle(
                         fontSize: 28,
@@ -120,7 +122,6 @@ class _MbtiTypesScreenState extends State<MbtiTypesScreen> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      /* TODO: type의 typeName 표시 */
                       type.typeName,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14),
