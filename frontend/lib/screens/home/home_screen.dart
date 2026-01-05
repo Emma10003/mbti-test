@@ -98,6 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 40),
+
+                // 로그인 버튼
                 SizedBox(
                   width: 300,
                   height: 50,
@@ -161,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: 20),
 
+                // 검사 시작하기 버튼
                 SizedBox(
                   width: 300,
                   height: 50,
@@ -184,6 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
              */
 
                 SizedBox(height: 20),
+
+                // 이전 결과 보기 버튼
                 SizedBox(
                     width: 300,
                     height: 50,
@@ -208,6 +213,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 SizedBox(height: 10),
+
+                // MBTI 유형 보기 버튼
                 SizedBox(
                   width: 300,
                   height: 50,
@@ -218,7 +225,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           foregroundColor: Colors.black87
                       ),
                       child: Text("MBTI 유형 보기")),
-                )
+                ),
+                SizedBox(height: 10),
+
+                // 회원가입 버튼
+                SizedBox(
+                  width: 300,
+                  height: 50,
+                  child: ElevatedButton(
+                      onPressed: () => context.go('/signup'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.black87
+                      ),
+                      child: Text("회원가입하기")),
+                ),
+
               ],
             ),
           ),

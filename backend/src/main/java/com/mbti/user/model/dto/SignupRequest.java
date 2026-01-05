@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private int id;
+public class SignupRequest {
     private String userName;
-    private String createdAt;
-    private String lastLogin;
 }

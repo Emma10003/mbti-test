@@ -9,6 +9,7 @@ import 'package:frontend/models/test_request_model.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/mbti_type_model.dart';
+import '../models/user_model.dart';
 /*
   final에 비해서 const가 가벼움
   - 단기적으로 값 변경하지 못하도록 상수처리 할 때 = final
@@ -23,9 +24,68 @@ class ApiService {
   // 상태 관리가 된 url 주소를 호출
   static const String url = ApiConstants.baseUrl;
 
+  // ==================== 사용자 관련 API ====================
+  // 로그인
+  static Future<User> login(String userName) async {
+    final res = await http.post(
+      Uri.parse('$url${ApiConstants.userUrl}'),
+      headers: {'Content-Type' : 'application/json'},
+      body: json.encode({'userName': userName})
+    );
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(res.body);
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
+  // 사용자명으로 사용자 조회
+  static Future<User?> getUserByUserName(String userName) async {
+    final res = await http.get(Uri.parse('$url${ApiConstants.userUrl}/name/$userName'));
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(res.body);
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 모든 사용자 조회
+  static Future<List<User>> getAllUsers() async {
+    final res = await http.get(Uri.parse('$url${ApiConstants.userUrl}'));
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(res.body);
+      return jsonData.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 회원가입
+  static Future<User> signup(String userName) async {
+    final res = await http.post(
+        Uri.parse('$url${ApiConstants.userUrl}'),
+        headers: {'Content-Type' : 'application/json'},
+        body: json.encode({'userName': userName})
+    );
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(res.body);
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
+
+  // ==================== 질문 관련 API ====================
   // 질문 가져오기
   static Future<List<Question>> getQuestions() async {
-    final res = await http.get(Uri.parse('$url/questions'));
+    final res = await http.get(Uri.parse('$url/mbti/questions'));
 
     if(res.statusCode == 200) {
       List<dynamic> jsonList = json.decode(res.body);
@@ -35,6 +95,7 @@ class ApiService {
     }
   }
 
+  // ==================== 검사 제출 API ====================
   // 결과 제출하기 post
   static Future<Result> submitTest(String userName, Map<int, String> answers) async {
     List<TestAnswer> answerList = answers.entries.map((en) {
@@ -254,7 +315,7 @@ class ModelsApiService {
     );
     if(res.statusCode == 200){
       Map<String, dynamic> jsonData = json.decode(res.body);
-      return json.decode(res.body);
+      return Result.fromJson(jsonData);
     } else {
       throw Exception('제출 실패');
     }

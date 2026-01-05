@@ -9,7 +9,7 @@ public interface UserService {
     User login(String userName);
 
     // ID로 사용자 조회
-    User getUserById(Long id);
+    User getUserById(int id);
 
     // 사용자명으로 조회
     User getUserByUserName(String userName);
@@ -18,5 +18,8 @@ public interface UserService {
     List<User> getAllUsers();
 
     // 사용자 삭제
-    void deleteUser(Long id);
+    void deleteUser(int id);
+
+    // 회원가입
+    User signup(String userName);
 }
