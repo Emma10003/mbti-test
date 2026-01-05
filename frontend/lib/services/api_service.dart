@@ -6,7 +6,8 @@ import 'package:frontend/models/answer_model.dart';
 import 'package:frontend/models/question_model.dart';
 import 'package:frontend/models/result_model.dart';
 import 'package:frontend/models/test_request_model.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 import '../models/mbti_type_model.dart';
 import '../models/user_model.dart';
@@ -19,7 +20,212 @@ import '../models/user_model.dart';
   final = 특정 기능이나 화면에서만 부분적으로 사용되는 상수 명칭
   */
 
+/*
+Dio 의 장점 ----------------------------------------
+1. 자동으로 JSON 인코딩 / 디코딩 처리
+2. Interceptor 를 통한 로깅, 인증 토큰 추가 가능
+3. 백엔드 통신 타임아웃 설정이 더 간편
+4. FormData, 파일 업로드 지원이 편리
+5. 에러처리가 더 구조화되어 있음
+6. queryParameters를 쉽게 추가 가능
+
+http와의 차이점 -------------------------------------
+- http : json.encode() / json.decode() 필요.
+- dio  : 자동으로 처리, response.data로 바로 접근.
+
+- http : Uri.parse() 필요.
+- dio  : baseUrl 설정 후 상대경로만 작성.
+
+- http : 에러 처리가 statusCode 기반.
+- dio  : DioException으로 다양한 에러 타입 처리 가능.
+ */
 class ApiService {
+
+  static const String url = ApiConstants.baseUrl;
+
+  // Dio 인스턴스 생성
+  static final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: url,
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
+      headers: {
+        'Content-type' : 'application/json',
+      },
+    ),
+  );
+
+  // ==================== 사용자 관련 API ====================
+  // 로그인
+  static Future<User> login(String userName) async {
+    final res = await _dio.post(
+        ApiConstants.userUrl,
+        data: {'userName': userName}
+    );
+
+    if(res.statusCode == 200) {
+      return User.fromJson(res.data);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
+  // 사용자명으로 사용자 조회
+  static Future<User?> getUserByUserName(String userName) async {
+    final res = await _dio.get('${ApiConstants.userUrl}/name/$userName');
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = res.data;
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 모든 사용자 조회
+  static Future<List<User>> getAllUsers() async {
+    final res = await _dio.get(ApiConstants.userUrl);
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonData = res.data;
+      return jsonData.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 회원가입
+  static Future<User> signup(String userName) async {
+    final res = await _dio.post(
+        ApiConstants.userUrl,
+    );
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = res.data;
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
+
+  // ==================== 질문 관련 API ====================
+  // 질문 가져오기
+  static Future<List<Question>> getQuestions() async {
+    final res = await _dio.get('/mbti/questions');
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = res.data;
+      return jsonList.map((json) => Question.fromJson(json)).toList();
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // ==================== 검사 제출 API ====================
+  // 결과 제출하기 post
+  static Future<Result> submitTest(String userName, Map<int, String> answers) async {
+    List<TestAnswer> answerList = answers.entries.map((en) {
+      return TestAnswer(questionId: en.key, selectedOption: en.value);
+    }).toList();
+
+    TestRequest request = TestRequest(userName: userName, answers: answerList);
+
+    final res = await _dio.post(
+        ApiConstants.submit,
+        data: request.toJson(),
+    );
+    if(res.statusCode == 200){
+      return Result.fromJson(res.data);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
+  // 모든 MBTI 유형 조회
+  static Future<List<MbtiType>> getAllMbtiTypes() async {
+    final res = await _dio.get(ApiConstants.types);
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = res.data;
+      return jsonList.map((json) => MbtiType.fromJson(json)).toList();
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 특정 MBTI 유형 조회
+  static Future<MbtiType> getMbtiTypeByCode(String typeCode) async {
+    final res = await _dio.get('${ApiConstants.types}/$typeCode');
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = res.data;
+      return MbtiType.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+
+  // 사용자별 결과 조회
+  static Future<List<Result>> getResultsByUserName(String userName) async {
+    final res = await _dio.get(
+        ApiConstants.results,
+        queryParameters: {'userName': userName}
+    );
+
+    if(res.statusCode == 200) {
+      List<dynamic> jsonList = res.data;
+      return jsonList.map((json) => Result.fromJson(json)).toList();
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // ID로 결과 조회
+  static Future<Result> getResultById(int id) async {
+    final res = await _dio.get('$url${ApiConstants.result}/$id');
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = res.data;
+      return Result.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.loadFailed);
+    }
+  }
+
+  // 결과 삭제
+  static Future<void> deleteResult(int id) async {
+    final res = await _dio.delete('$url${ApiConstants.result}/$id');
+
+    if(res.statusCode != 200) {
+      throw Exception('삭제에 실패했습니다.');
+    }
+  }
+
+
+  // Health Check = 백엔드 상태 관리용 api
+  static Future<Result> healthCheck() async{
+    final res = await _dio.get(ApiConstants.health);
+
+    if(res.statusCode == 200) {
+      Map<String, dynamic> jsonData = res.data;
+      return Result.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.serverError);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+/*
+class HttpApiService {
 
   // 상태 관리가 된 url 주소를 호출
   static const String url = ApiConstants.baseUrl;
@@ -438,3 +644,6 @@ class DynamicApiService {
     }
   }
 }
+
+
+ */
