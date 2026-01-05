@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/common/constants.dart';
+import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/screens/history/result_detail_screen.dart';
 import 'package:frontend/screens/home/home_screen.dart';
 import 'package:frontend/screens/login/login_screen.dart';
@@ -8,10 +9,12 @@ import 'package:frontend/screens/signup/signup_screen.dart';
 import 'package:frontend/screens/test/test_screen.dart';
 import 'package:frontend/screens/types/mbti_type_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'models/result_model.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -100,11 +103,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     //     Google에서 제공하는 기본 커스텀 CSS 를 사용하며
     //                 특정 경로를 개발자가 하나하나 설정하겠다.
-    return MaterialApp.router(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      // 경로 설정에 대한 것은 : _router 라는 변수를 참고해서 사용하기.
-      routerConfig: _router,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider())
+      ],
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        // 경로 설정에 대한 것은 : _router 라는 변수를 참고해서 사용하기.
+        routerConfig: _router,)
       /*
       추후에 라이트테마/댜크테마 만들어서 세팅
       theme

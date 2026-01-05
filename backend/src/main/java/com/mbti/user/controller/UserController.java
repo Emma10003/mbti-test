@@ -65,7 +65,7 @@ public class UserController {
      * GET /api/users/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
         log.info("GET /api/users/{} - Fetching user", id);
         try {
             User user = userService.getUserById(id);
@@ -103,7 +103,7 @@ public class UserController {
      * DELETE /api/users/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         log.info("DELETE /api/users/{} - Deleting user", id);
         try {
             userService.deleteUser(id);

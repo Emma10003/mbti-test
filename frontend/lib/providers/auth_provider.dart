@@ -61,8 +61,6 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();  // UI 업데이트
     }
-
-    notifyListeners();  // UI 업데이트
   }
 
   // 로딩 상태 설정

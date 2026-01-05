@@ -1,0 +1,26 @@
+2026-01-05 10:20:44.514  INFO 4392 --- [restartedMain] com.mbti.BackendApplication              : Starting BackendApplication using Java 21.0.8 with PID 4392 (E:\employment preparation\tje_KDT_lecture\MBTI\backend\build\classes\java\main started by emma1 in E:\employment preparation\tje_KDT_lecture\MBTI\backend)
+2026-01-05 10:20:44.519  INFO 4392 --- [restartedMain] com.mbti.BackendApplication              : No active profile set, falling back to 1 default profile: "default"
+2026-01-05 10:20:44.560  INFO 4392 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-05 10:20:44.560  INFO 4392 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-05 10:20:45.541  INFO 4392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-01-05 10:20:45.553  INFO 4392 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-05 10:20:45.553  INFO 4392 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.17]
+2026-01-05 10:20:45.598  INFO 4392 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-05 10:20:45.598  INFO 4392 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1037 ms
+2026-01-05 10:20:46.213  INFO 4392 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-01-05 10:20:46.250  INFO 4392 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-01-05 10:20:46.258  INFO 4392 --- [restartedMain] com.mbti.BackendApplication              : Started BackendApplication in 2.304 seconds (process running for 2.983)
+2026-01-05 10:20:46.301  INFO 4392 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-05 10:20:46.301  INFO 4392 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-05 10:20:46.302  INFO 4392 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-01-05 10:20:46.334  WARN 4392 --- [http-nio-8080-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "signup"]
+2026-01-05 10:21:12.042  WARN 4392 --- [http-nio-8080-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "signup"]
+2026-01-05 10:21:12.822  WARN 4392 --- [http-nio-8080-exec-3] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "signup"]
+2026-01-05 10:21:31.377  WARN 4392 --- [http-nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "signup"]
+2026-01-05 10:23:22.230  WARN 4392 --- [http-nio-8080-exec-6] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "signup"]
+2026-01-05 10:28:12.689  INFO 4392 --- [http-nio-8080-exec-9] c.mbti.user.controller.UserController    : POST /api/users/signup - User: 김철수
+2026-01-05 10:28:12.691  INFO 4392 --- [http-nio-8080-exec-9] c.m.user.model.service.UserServiceImpl   : Signup attempt for user: 김철수
+2026-01-05 10:28:12.709  INFO 4392 --- [http-nio-8080-exec-9] com.zaxxer.hikari.HikariDataSource       : MyHikariCP - Starting...
+2026-01-05 10:28:12.954  INFO 4392 --- [http-nio-8080-exec-9] com.zaxxer.hikari.pool.HikariPool        : MyHikariCP - Added connection org.postgresql.jdbc.PgConnection@79332f28
+2026-01-05 10:28:12.955  INFO 4392 --- [http-nio-8080-exec-9] com.zaxxer.hikari.HikariDataSource       : MyHikariCP - Start completed.
+2026-01-05 10:28:13.009  INFO 4392 --- [http-nio-8080-exec-9] c.m.user.model.service.UserServiceImpl   : New user signed up: 김철수 with id: 1

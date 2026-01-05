@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/api_service.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../providers/auth_provider.dart';
 /*
 로그인한 유저 이름이 테스트로 넘어가는지 확인
 signup
@@ -46,6 +49,48 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorText = null;
     });
     return true;
+  }
+
+  Future<void> _handleLogin() async {
+    if(!_validateName()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      String name = _nameController.text.trim();
+      final user = await ApiService.login(name);
+
+      if(mounted) {
+        await context.read<AuthProvider>().login(user);
+
+        // ScaffoldMessenger.of  context ${user.userName}님, 환영합니다.
+        ScaffoldMessenger.of(context).showSnackBar(
+          // Google 에서 만든 디자인과 디자인 세부설정이 작성되어 있는
+          // SnackBar.dart 클래스 파일 (컴포넌트!)
+          // SnackBor 를 만들 때
+          // 필수로 사용했으면 하는 속성과 선택적으로 사용했으면 하는 속성이 존재.
+          // content 라는 속성은 필수로 사용했으면 좋겠다는 속성.
+          // 이 속성에는 클라이언트들이 어떤 바인지 확인할 수 있는 텍스트나 아이콘이 있었으면 좋겠다.
+          // Text()의 경우에도 Google에서 예쁘게 중간은 가는 디자인을 설정한 Text.dart 파일.
+          // 어느정도 디자인을 할 수 있는 상급 개발자가 되고 나면 Google에서 제공하는 디자인을 사용하는 것이 아니라,
+          // 회사 내부 규정대로 만들어놓은 회사이름_Text() / DarkThemeText.dart 와 같은 파일을 만들어
+          // 사용할 수 있으므로, content: 개발자가 사용하고자 하는 UI 기반 클래스를 작성해라.
+          SnackBar(
+            content: Text('${user.userName}님, 환영합니다.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // 로그인 후 이동하고자 하는 화면 이동
+        context.go('/');
+      }
+    } catch(e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('로그인에 실패하였습니다.')),
+      );
+    }
   }
 
 
