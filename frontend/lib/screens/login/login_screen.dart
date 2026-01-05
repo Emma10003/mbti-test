@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/api_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 /*
@@ -87,9 +88,17 @@ class _LoginScreenState extends State<LoginScreen> {
         context.go('/');
       }
     } catch(e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('로그인에 실패하였습니다.')),
-      );
+      if(mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('로그인에 실패했습니다. 다시 시도해주세요.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -152,15 +161,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: 30),
 
+                // 로그인 버튼
                 SizedBox(
                   width: 300,
                   height: 50,
                   child: ElevatedButton(
+
                     onPressed: () {
+                      _isLoading ? null : _handleLogin();
+                      /*
                       if(_validateName()) {
                         String name = _nameController.text.trim();
                         context.go('/test', extra: name);
                       }
+                      */
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -168,6 +182,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Text('로그인하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
+                ),
+                SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('계정이 없으신가요?'),
+                    TextButton(
+                        onPressed: () => context.go('/signup'),
+                        child: Text('회원가입하기'),
+                    ),
+                  ],
                 ),
               ],
             ),

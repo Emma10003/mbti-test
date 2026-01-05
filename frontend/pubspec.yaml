@@ -13,7 +13,8 @@ dependencies:
     sdk: flutter
   # 백엔드로 DB 요청을 보내기 위한 패키지, GET/POST/PUT/DELETE 지원
   # dio 사용할 것
-  http: ^1.1.0
+#  http: ^1.1.0
+  dio: ^5.4.0
   # 상태 관리 패키지, 데이터를 공유하고 관리할 수 있다.
   # riverpod 사용할 것
   provider: ^6.1.1
