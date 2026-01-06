@@ -24,3 +24,5 @@
 2026-01-05 10:28:12.954  INFO 4392 --- [http-nio-8080-exec-9] com.zaxxer.hikari.pool.HikariPool        : MyHikariCP - Added connection org.postgresql.jdbc.PgConnection@79332f28
 2026-01-05 10:28:12.955  INFO 4392 --- [http-nio-8080-exec-9] com.zaxxer.hikari.HikariDataSource       : MyHikariCP - Start completed.
 2026-01-05 10:28:13.009  INFO 4392 --- [http-nio-8080-exec-9] c.m.user.model.service.UserServiceImpl   : New user signed up: 김철수 with id: 1
+2026-01-05 15:14:46.564  INFO 4392 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyHikariCP - Shutdown initiated...
+2026-01-05 15:14:46.711  INFO 4392 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : MyHikariCP - Shutdown completed.

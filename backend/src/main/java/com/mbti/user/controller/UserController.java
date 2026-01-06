@@ -123,25 +123,17 @@ public class UserController {
         log.info("POST /api/users/signup - User: {}", request.getUserName());
 
         try {
-            // TODO 1: 요청 검증 - userName이 null이거나 비어있는지 체크
-            // 힌트: BadRequest(400) 응답
             if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
                 log.warn("Empty username provided for signup");
                 ErrorResponse error = new ErrorResponse("사용자 이름은 필수입니다.");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // TODO 2: userService.signup() 호출
             User user = userService.signup(request.getUserName().trim());
 
-            // TODO 3: 성공 시 Created(201) 상태코드와 함께 User 반환
-            // 힌트: ResponseEntity.status(HttpStatus.CREATED).body(user)
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
 
         } catch (IllegalArgumentException e) {
-            // TODO 4: 중복 또는 유효성 검사 실패 시 처리
-            // 힌트: Conflict(409) 또는 BadRequest(400) 응답
-            // 힌트: ErrorResponse 객체 생성하여 반환
             log.warn("Signup failed: {}", e.getMessage());
             ErrorResponse error = new ErrorResponse(e.getMessage(), request.getUserName());
 
