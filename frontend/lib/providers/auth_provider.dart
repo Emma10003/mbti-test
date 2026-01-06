@@ -26,20 +26,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();  // UI 업데이트
   }
 
-  // 로그아웃 처리
-  Future<void> logout() async {
-    _user = user;
-
-    // SharedPreferences 에 사용자 정보 삭제.
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('userId');  // userId 변수공간 이름에 내장된 데이터 지우기
-    await prefs.remove('userName');  // userName 변수공간 이름에 내장된 데이터 지우기
-
-    notifyListeners();  // UI 업데이트
-  }
-
   // 어플 시작 시 저장된 로그인 상태 복원 (나의 핸드폰에 내장되어 있는 데이터로 복원)
-  Future<void> loadSavedUser(User user) async {
+  Future<void> loadSavedUser() async {
     _isLoading = true;
     notifyListeners();  // UI 업데이트
 
@@ -61,6 +49,18 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();  // UI 업데이트
     }
+  }
+
+  // 로그아웃 처리
+  Future<void> logout() async {
+    _user = null;
+
+    // SharedPreferences 에 사용자 정보 삭제.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userId');  // userId 변수공간 이름에 내장된 데이터 지우기
+    await prefs.remove('userName');  // userName 변수공간 이름에 내장된 데이터 지우기
+
+    notifyListeners();  // UI 업데이트
   }
 
   // 로딩 상태 설정

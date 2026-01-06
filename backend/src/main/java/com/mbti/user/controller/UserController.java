@@ -16,7 +16,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+/**
+ * 단순 get method는 가볍게
+ * @CrossOrigin(origins = "*") 사용 가능하지만
+ * get 이외의 메서드는 추가 CORS 설정 필요.
+ * @CrossOrigin(origins = "*", allowedHeaders = "*")
+ * 제일 좋은 방법은 WebConfig 세팅하는 것.
+ * WebConfig.java 세팅하는 순간 부터는 @CrossOrigin() 사용 금지.
+ * 이중으로 웹 연결 설정을 할 경우 환경설정 로직이 내부에서 중첩되어 코드가 꼬일 수 있음.
+ *
+ * A 부서 : WebConfig로 프론트엔드 연결 가능한 주소 세팅
+ * B 부서 : @CrossOrigin으로 프론트엔드 연결 가능한 주소 세팅
+ * => 외부에서 봤을 때는 A 부서와 B 부서가 대화가 안 된 상태이고, 어떤 부서가 만든 프론트엔드 허용 로직을 사용해야 하는지
+ *    알 수 없는 상태가 됨.
+ * 본인이 개별적으로 코드를 작성해놓고 부서 두 가지로 팀을 나누어 겨루는 상황과 비슷.
+ * 팀 내에서도 소통 불능으로 인하여 프론트엔드 연결 설정을 모두 따로 작업했다 표기하는 것과 같음.
+ * 반드시 WebConfig로 프론트엔드 주소를 세팅하거나 @CrossOrigin으로 주소 세팅.
+ * (근데 주로 WebConfig를 사용하길 권장함.)
+ */
+// CrossOrigin을 WebConfig로 변경하여 사용
+// 회원가입 성공되었습니다 까지 확인하기.
+// @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class UserController {
 
@@ -123,25 +143,17 @@ public class UserController {
         log.info("POST /api/users/signup - User: {}", request.getUserName());
 
         try {
-            // TODO 1: 요청 검증 - userName이 null이거나 비어있는지 체크
-            // 힌트: BadRequest(400) 응답
             if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
                 log.warn("Empty username provided for signup");
                 ErrorResponse error = new ErrorResponse("사용자 이름은 필수입니다.");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // TODO 2: userService.signup() 호출
             User user = userService.signup(request.getUserName().trim());
 
-            // TODO 3: 성공 시 Created(201) 상태코드와 함께 User 반환
-            // 힌트: ResponseEntity.status(HttpStatus.CREATED).body(user)
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
 
         } catch (IllegalArgumentException e) {
-            // TODO 4: 중복 또는 유효성 검사 실패 시 처리
-            // 힌트: Conflict(409) 또는 BadRequest(400) 응답
-            // 힌트: ErrorResponse 객체 생성하여 반환
             log.warn("Signup failed: {}", e.getMessage());
             ErrorResponse error = new ErrorResponse(e.getMessage(), request.getUserName());
 

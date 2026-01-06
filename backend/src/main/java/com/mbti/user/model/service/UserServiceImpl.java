@@ -84,31 +84,22 @@ public class UserServiceImpl implements UserService {
     public User signup(String userName) {
         log.info("Signup attempt for user: {}", userName);
 
-        // TODO 1: 유효성 검사 - userName이 null이거나 비어있는지 체크
-        // 힌트: if (userName == null || userName.trim().isEmpty())
         if (userName == null || userName.trim().isEmpty()) {
             log.warn("Empty username provided for signup");
             throw new IllegalArgumentException("사용자 이름은 필수입니다.");
         }
 
-        // TODO 2: 중복 체크 - 이미 존재하는 사용자인지 확인
-        // 힌트: userMapper.selectByUserName(userName)
-        // 힌트: 존재하면 IllegalArgumentException 발생
         User existingUser = userMapper.selectByUserName(userName);
         if (existingUser != null) {
             log.warn("Username already exists: {}", userName);
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         }
 
-        // TODO 3: 신규 사용자 등록
-        // 힌트: User 객체 생성 -> userName 설정 -> userMapper.insertUser() 호출
         User newUser = new User();
         newUser.setUserName(userName);
         userMapper.insertUser(newUser);
         log.info("New user signed up: {} with id: {}", userName, newUser.getId());
 
-        // TODO 4: 등록된 사용자 정보 반환
-        // 힌트: userMapper.selectById(newUser.getId())
         return userMapper.selectById(newUser.getId());
     }
 }

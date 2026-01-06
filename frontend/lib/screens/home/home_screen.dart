@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/common/constants.dart';
+import 'package:frontend/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 // 상태에 따른 화면 변화가 일어날 예정.
 class HomeScreen extends StatefulWidget {
@@ -31,7 +33,20 @@ class _HomeScreenState extends State<HomeScreen> {
    */
   final TextEditingController _nameController = TextEditingController();
 
-  String? _errorText;  // 에러 메세지를 담을 변수, ? = 변수공간에 null값이 들어갈 수 있다.
+  // 에러 메세지를 담을 변수, ? = 변수공간에 null값이 들어갈 수 있다.
+  String? _errorText;
+
+  // 홈 화면 시작하자마자 실행할 기능들 세팅
+  // init = 초기세팅  ex) git init -> git 초기세팅
+  // state = 상태 변화
+  // initState = 위젯 화면을 보여줄 때 초기 상태의 화면을 변화하여 보여주겠다.
+  // ex) 화면에서 backend 데이터를 가져오겠다. or 로그인 상태를 복원하겠다.
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().loadSavedUser();
+    });
+  }
 
   // 유효성 검사 함수
   // 기능 중에 일부라도 문법상 문제가 생기면 기능 자체가 작동 중지.
@@ -39,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String name = _nameController.text.trim();
 
     // 1. 빈 값 체크
-    if(name.isEmpty) {
+    if (name.isEmpty) {
       setState(() {
         _errorText = '이름을 입력해주세요.';
       });
@@ -47,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     // 2. 글자 수 체크 (2글자 미만)
-    if(name.length < 2) {
+    if (name.length < 2) {
       setState(() {
         _errorText = '이름은 최소 2글자 이상이어야 합니다.';
       });
@@ -58,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //    만약 숫자도 허용하려면 r'^[가-힣a-zA-Z0-9]+$' 로 변경
     //    - : 어디서부터 어디까지 표현
     //    가-힣 : '가'에서부터 '힣'까지, (힣-a : '힣'에서 'a'까지는 잘못된 문법. 정규식 동작 X)
-    if(!RegExp(r'^[가-힣a-zA-Z]+$').hasMatch(name)) {
+    if (!RegExp(r'^[가-힣a-zA-Z]+$').hasMatch(name)) {
       setState(() {
         _errorText = '한글 또는 영문만 입력 가능합니다.\n(특수문자, 숫자 불가)';
       });
@@ -72,81 +87,115 @@ class _HomeScreenState extends State<HomeScreen> {
     return true;
   }
 
-
   // UI 화면
   /*
   키보드를 모바일 화면에서 사용해야 하는 경우
   화면이 가려지는 것을 방지하기 위해 스크롤 가능하게 처리.
    */
+  void _handleLogout() {}
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: /*const*/ Text("MBTI 유형 검사")
-      ),
-      body:
-      SingleChildScrollView(
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 50),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.psychology, size: 100, color: Colors.blue),
-                SizedBox(height: 30),
-                Text('나의 성격을 알아보는 ${AppConstants.totalQuestions}가지 질문',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(height: 40),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final isLoggedIn = authProvider.isLoggedIn;
+        final userName = authProvider.user?.userName;
 
-                // 로그인 버튼
-                SizedBox(
-                  width: 300,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => context.go('/login'),
-                    child: Text('로그인하기', style: TextStyle(fontSize: 20,)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("MBTI 유형 검사"),
+            actions: [
+              // 로그인 상태에 따라 버튼 표기
+              if (isLoggedIn)
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.account_circle),
+                  onSelected: (value) {
+                    if (value == 'logout') {
+                      _handleLogout();
+                    } else if (value == 'history') {
+                      context.go("/history", extra: userName);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(child: Text('$userName님 ')),
+                    PopupMenuItem(child: Text('내 기록 보기'), value: 'history'),
+                    PopupMenuDivider(),
+                    PopupMenuItem(child: Text('로그아웃'), value: 'logout'),
+                  ],
+                ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.psychology, size: 100, color: Colors.blue),
+                    SizedBox(height: 30),
+                    Text(
+                      '나의 성격을 알아보는 ${AppConstants.totalQuestions}가지 질문',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(height: 40),
+
+                    // 로그인 버튼
+                    isLoggedIn
+                    ? Text(
+                        '$userName 님',
+                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blue)
                     )
-                  )
-                ),
-                SizedBox(height: 40),
-                /**
-                 * [ 유효성검사 ]
-                 * 방법 1번 : TextField 에 입력할 때 마다 표기
-                 * 방법 2번 : ElevatedButton 을 클릭할 때 표기
-                 */
-                SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: '이름',
-                        hintText: '이름을 입력하세요.',
-                        border: OutlineInputBorder(),
-                        errorText: _errorText,
+                    :
+                    SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => context.go('/login'),
+                        child: Text('로그인하기', style: TextStyle(fontSize: 20)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
                       ),
-                      onChanged: (value) {
-                        // 모든 상태 실시간 변경은 setState((){}) 내부에 작성.
-                        // setState() 로 감싸지 않은 if-else 문은 변수 값만 변경.
-                        // => 변수값은 변화하지만 화면에 업데이트 되지 않음.
-                        // setState() 로 감싼 if-else 문은
-                        // 화면이 자동으로 업데이트 되도록 상태 변경.
-                        setState(() {
-                          if(RegExp(r'[0-9]').hasMatch(value)) {
-                            _errorText = '숫자는 입력할 수 없습니다.';
-                          } else if(RegExp(r'[^가-힣a-zA-Z]').hasMatch(value)) {
-                            _errorText = '한글과 영어만 입력 가능합니다.';
-                          } else {
-                            _errorText = null;
-                          }
-                        });
+                    ),
 
-                      },
+                    SizedBox(height: 40),
+                    /**
+                       * [ 유효성검사 ]
+                       * 방법 1번 : TextField 에 입력할 때 마다 표기
+                       * 방법 2번 : ElevatedButton 을 클릭할 때 표기
+                       */
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: '이름',
+                          hintText: '이름을 입력하세요.',
+                          border: OutlineInputBorder(),
+                          errorText: _errorText,
+                        ),
+                        onChanged: (value) {
+                          // 모든 상태 실시간 변경은 setState((){}) 내부에 작성.
+                          // setState() 로 감싸지 않은 if-else 문은 변수 값만 변경.
+                          // => 변수값은 변화하지만 화면에 업데이트 되지 않음.
+                          // setState() 로 감싼 if-else 문은
+                          // 화면이 자동으로 업데이트 되도록 상태 변경.
+                          setState(() {
+                            if (RegExp(r'[0-9]').hasMatch(value)) {
+                              _errorText = '숫자는 입력할 수 없습니다.';
+                            } else if (RegExp(
+                              r'[^가-힣a-zA-Z]',
+                            ).hasMatch(value)) {
+                              _errorText = '한글과 영어만 입력 가능합니다.';
+                            } else {
+                              _errorText = null;
+                            }
+                          });
+                        },
 
-                      /*
+                        /*
                       _validateName() 을 아래 onChanged 에서는 사용하지 않음.
                       '글자를 입력하면 무조건 에러 메세지를 비워라'
                       1111을 입력하는 순간에도 계속 에러 메세지를 지워버리기 때문에
@@ -159,44 +208,43 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
                       },
                       */
-                    )
-                ),
-                SizedBox(height: 20),
+                      ),
+                    ),
+                    SizedBox(height: 20),
 
-                // 검사 시작하기 버튼
-                SizedBox(
-                  width: 300,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
+                    // 검사 시작하기 버튼
+                    SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_validateName()) {
+                            String name = _nameController.text.trim();
+                            // 검사 화면으로 이동 (이름 전달)
+                            context.go('/test', extra: name);
+                          }
+                        },
+                        child: Text('검사 시작하기', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
 
-                      if(_validateName()) {
-                        String name = _nameController.text.trim();
-                        // 검사 화면으로 이동 (이름 전달)
-                        context.go('/test', extra:name);
-                      }
-                    },
-                    child: Text('검사 시작하기', style: TextStyle(fontSize: 16),),
-                  ),
-                ),
-                /*
+                    /*
             div 와 성격이 같은 SizedBox 를 이용해서
             이전 결과 보기 버튼을 생성할 수 있다.
             굳이 SizedBox 를 사용하여 버튼을 감쌀 필요는 없지만,
             상태 관리나 디자인을 위해서 SizedBox로 감싼 다음에 버튼을 작성하는 것도 방법!
              */
+                    SizedBox(height: 20),
 
-                SizedBox(height: 20),
-
-                // 이전 결과 보기 버튼
-                SizedBox(
-                    width: 300,
-                    height: 50,
-                    child: ElevatedButton(
+                    // 이전 결과 보기 버튼
+                    SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
                         onPressed: () {
                           print("버튼 눌림");
                           // 이름 내부 한 번 더 상태 확인
-                          if(_validateName()) {
+                          if (_validateName()) {
                             print("검사 결과");
                             String name = _nameController.text.trim();
                             // 작성한 이름 유저의 mbti 결과 확인
@@ -208,44 +256,47 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: Colors.grey[300],
                           foregroundColor: Colors.black87,
                         ),
-                        child: Text("이전 결과 보기")
-                    )
-                ),
+                        child: Text("이전 결과 보기"),
+                      ),
+                    ),
 
-                SizedBox(height: 10),
+                    SizedBox(height: 10),
 
-                // MBTI 유형 보기 버튼
-                SizedBox(
-                  width: 300,
-                  height: 50,
-                  child: ElevatedButton(
-                      onPressed: () => context.go('/types'),
-                      style: ElevatedButton.styleFrom(
+                    // MBTI 유형 보기 버튼
+                    SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => context.go('/types'),
+                        style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[300],
-                          foregroundColor: Colors.black87
+                          foregroundColor: Colors.black87,
+                        ),
+                        child: Text("MBTI 유형 보기"),
                       ),
-                      child: Text("MBTI 유형 보기")),
-                ),
-                SizedBox(height: 10),
+                    ),
+                    SizedBox(height: 10),
 
-                // 회원가입 버튼
-                SizedBox(
-                  width: 300,
-                  height: 50,
-                  child: ElevatedButton(
-                      onPressed: () => context.go('/signup'),
-                      style: ElevatedButton.styleFrom(
+                    // 회원가입 버튼
+                    SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => context.go('/signup'),
+                        style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
-                          foregroundColor: Colors.black87
+                          foregroundColor: Colors.black87,
+                        ),
+                        child: Text("회원가입하기"),
                       ),
-                      child: Text("회원가입하기")),
+                    ),
+                  ],
                 ),
-
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -56,10 +56,29 @@ class ApiService {
   );
 
   // ==================== 사용자 관련 API ====================
+  // 회원가입
+  static Future<User> signup(String userName) async {
+    final res = await _dio.post(
+      '${ApiConstants.userUrl}/signup',
+      data: {'userName': userName}
+    );
+
+    // 회원가입의 경우 200과 201 사용.
+    // 200 : 요청 성공 (주로 GET, PUT, PATCH에서 사용)
+    // 201 : 리소스 생성 성공 (POST에서 사용) - 회원가입, 게시물 작성
+    // 204 : No content, 성공했으나 응답 본문 없음 (DELETE에서 사용)
+    if(res.statusCode == 200 || res.statusCode == 201) {
+      Map<String, dynamic> jsonData = res.data;
+      return User.fromJson(jsonData);
+    } else {
+      throw Exception(ErrorMessages.submitFailed);
+    }
+  }
+
   // 로그인
   static Future<User> login(String userName) async {
     final res = await _dio.post(
-        ApiConstants.userUrl,
+        '${ApiConstants.userUrl}/login',
         data: {'userName': userName}
     );
 
@@ -94,25 +113,10 @@ class ApiService {
     }
   }
 
-  // 회원가입
-  static Future<User> signup(String userName) async {
-    final res = await _dio.post(
-        ApiConstants.userUrl,
-    );
-
-    if(res.statusCode == 200) {
-      Map<String, dynamic> jsonData = res.data;
-      return User.fromJson(jsonData);
-    } else {
-      throw Exception(ErrorMessages.submitFailed);
-    }
-  }
-
-
   // ==================== 질문 관련 API ====================
   // 질문 가져오기
   static Future<List<Question>> getQuestions() async {
-    final res = await _dio.get('/mbti/questions');
+    final res = await _dio.get('${ApiConstants.mbtiUrl}/questions');
 
     if(res.statusCode == 200) {
       List<dynamic> jsonList = res.data;

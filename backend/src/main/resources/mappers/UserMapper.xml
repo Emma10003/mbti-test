@@ -42,17 +42,8 @@
         DELETE FROM users WHERE id = #{id}
     </delete>
 
-    <!-- TODO: 회원가입 쿼리 작성 -->
-    <!--
-        요구사항:
-        1. users 테이블에 신규 사용자 INSERT
-        2. user_name, created_at 컬럼 사용
-        3. useGeneratedKeys="true" 설정
-        4. keyProperty="id" 설정
-        5. created_at은 CURRENT_TIMESTAMP 사용
-    -->
+    <!-- 회원가입 -->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-        <!-- 여기에 SQL 작성 -->
         INSERT INTO users (user_name, created_at)
         VALUES (#{userName}, CURRENT_TIMESTAMP)
     </insert>
