@@ -81,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Text('${user.userName}님, 환영합니다.'),
             duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
           ),
         );
 
