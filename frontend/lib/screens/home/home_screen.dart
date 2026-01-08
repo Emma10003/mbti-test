@@ -48,6 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _nameController.text = "홍길동";
    */
   final TextEditingController _nameController = TextEditingController();
+  // 에러 메세지를 담을 변수, ? = 변수공간에 null값이 들어갈 수 있다.
+  String? _errorText;
 
   // 홈 화면 시작하자마자 실행할 기능들 세팅
   // init = 초기세팅  ex) git init -> git 초기세팅
@@ -61,8 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // 에러 메세지를 담을 변수, ? = 변수공간에 null값이 들어갈 수 있다.
-  String? _errorText;
 
   /*
   로그인한 상태에서 검사 시작하기 버튼을 클릭했을 때,
@@ -191,7 +191,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
                     if (!isLoggedIn)
-                      GuestSection()
+                      GuestSection(
+                        abc: _nameController,
+                        eText: _errorText,
+                        onErrorChanged: (error) => setState(() => _errorText = error),
+                      )
                     else
                       UserSection(),
 

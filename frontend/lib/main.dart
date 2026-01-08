@@ -4,17 +4,21 @@ import 'package:frontend/providers/auth_provider.dart';
 import 'package:frontend/screens/history/result_detail_screen.dart';
 import 'package:frontend/screens/home/home_screen.dart';
 import 'package:frontend/screens/login/login_screen.dart';
+import 'package:frontend/screens/map/map_screen.dart';
 import 'package:frontend/screens/result/result_screen.dart';
 import 'package:frontend/screens/signup/signup_screen.dart';
 import 'package:frontend/screens/test/test_screen.dart';
 import 'package:frontend/screens/types/mbti_type_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:provider/provider.dart';
 
 import 'models/result_model.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // 1. 카카오 자바스크립트 키 초기화
+  AuthRepository.initialize(appKey: '51d42d0567c6a7f2572338a87991a429');
   runApp(const MyApp());
 }
 
@@ -24,6 +28,12 @@ final GoRouter _router = GoRouter(
       GoRoute(
           path: '/',
           builder: (context, state) => const HomeScreen()
+      ),
+
+      // 2. 지도 경로 스크린 추가 /map
+      GoRoute(
+          path: '/map',
+          builder: (context, state) => const MapScreen()
       ),
 
       // 로그인 화면

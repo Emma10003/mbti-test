@@ -33,7 +33,7 @@ public class WebConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:57472",
                                 "http://localhost:3000", // iOS 테스트에서는 8080 사용
-                                "http://localhost:65496",
+                                "http://localhost:53827",
                                 "http://10.0.2.2:8080"   // 안드로이드 핸드폰 테스트
                         )
                         .allowCredentials(true)

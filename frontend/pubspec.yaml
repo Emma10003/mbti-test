@@ -27,6 +27,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   # 로그인 상태 저장 모듈
   shared_preferences: ^2.2.2
+  # 카카오맵 플러그인 - javascript 키를 가져와서 위젯으로 포장한 다음 풍부하게 기능을 활용하겠다.
+  kakao_map_plugin: ^0.3.7
+  # 내 위치(GPS) 좌표를 가져오는 도구
+  # 생각해보기 -> Android IOS에 위치 관련 권한 추가
+  geolocator: ^13.0.1
 
 dev_dependencies:
   flutter_test:

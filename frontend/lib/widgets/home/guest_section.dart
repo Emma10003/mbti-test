@@ -7,32 +7,35 @@ StatelessWidget이었지만,
 StatefulWidget이 되어야 한다.
  */
 class GuestSection extends StatefulWidget {
-  const GuestSection({super.key});
+  final TextEditingController abc;
+  final String? eText;
+  final Function(String?) onErrorChanged;
+
+  const GuestSection({
+    required this.abc,
+    this.eText,
+    required this.onErrorChanged,
+  });
 
   @override
   State<GuestSection> createState() => _GuestSectionState();
 }
 
 class _GuestSectionState extends State<GuestSection> {
-  final TextEditingController _nameController = TextEditingController();
-  String? _errorText;
 
   bool _validateName() {
-    String name = _nameController.text.trim();
+    // 만약에 부모로부터 받은 변수의 컨트롤러를 사용한다면
+    String name = widget.abc.text.trim();
 
     // 1. 빈 값 체크
     if (name.isEmpty) {
-      setState(() {
-        _errorText = '이름을 입력해주세요.';
-      });
+      widget.onErrorChanged("이름을 입력해주세요.");
       return false;
     }
 
     // 2. 글자 수 체크 (2글자 미만)
     if (name.length < 2) {
-      setState(() {
-        _errorText = '이름은 최소 2글자 이상이어야 합니다.';
-      });
+      widget.onErrorChanged('이름은 최소 2글자 이상이어야 합니다.');
       return false;
     }
 
@@ -41,16 +44,12 @@ class _GuestSectionState extends State<GuestSection> {
     //    - : 어디서부터 어디까지 표현
     //    가-힣 : '가'에서부터 '힣'까지, (힣-a : '힣'에서 'a'까지는 잘못된 문법. 정규식 동작 X)
     if (!RegExp(r'^[가-힣a-zA-Z]+$').hasMatch(name)) {
-      setState(() {
-        _errorText = '한글 또는 영문만 입력 가능합니다.\n(특수문자, 숫자 불가)';
-      });
+      widget.onErrorChanged('한글 또는 영문만 입력 가능합니다.\n(특수문자, 숫자 불가)');
       return false;
     }
 
     // 통과 시 에러 메세지 비움
-    setState(() {
-      _errorText = null;
-    });
+    widget.onErrorChanged(null);
     return true;
   }
 
@@ -76,12 +75,12 @@ class _GuestSectionState extends State<GuestSection> {
         SizedBox(
           width: 300,
           child: TextField(
-            controller: _nameController,
+            controller: widget.abc,
             decoration: InputDecoration(
               labelText: '이름',
               hintText: '이름을 입력하세요.',
               border: OutlineInputBorder(),
-              errorText: _errorText,
+              errorText: widget.eText,
             ),
             onChanged: (value) {
               // 모든 상태 실시간 변경은 setState((){}) 내부에 작성.
@@ -89,17 +88,15 @@ class _GuestSectionState extends State<GuestSection> {
               // => 변수값은 변화하지만 화면에 업데이트 되지 않음.
               // setState() 로 감싼 if-else 문은
               // 화면이 자동으로 업데이트 되도록 상태 변경.
-              setState(() {
-                if (RegExp(r'[0-9]').hasMatch(value)) {
-                  _errorText = '숫자는 입력할 수 없습니다.';
-                } else if (RegExp(
-                  r'[^가-힣a-zA-Z]',
-                ).hasMatch(value)) {
-                  _errorText = '한글과 영어만 입력 가능합니다.';
-                } else {
-                  _errorText = null;
-                }
-              });
+              if (RegExp(r'[0-9]').hasMatch(value)) {
+                widget.onErrorChanged('숫자는 입력할 수 없습니다.');
+              } else if (RegExp(
+                r'[^가-힣a-zA-Z]',
+              ).hasMatch(value)) {
+                widget.onErrorChanged('한글과 영어만 입력 가능합니다.');
+              } else {
+                widget.onErrorChanged(null);
+              }
             },
 
             /*
@@ -132,7 +129,7 @@ class _GuestSectionState extends State<GuestSection> {
             ),
           ),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 10),
 
         /*
             div 와 성격이 같은 SizedBox 를 이용해서
@@ -141,6 +138,7 @@ class _GuestSectionState extends State<GuestSection> {
             상태 관리나 디자인을 위해서 SizedBox로 감싼 다음에 버튼을 작성하는 것도 방법!
          */
         // 이전 결과 보기 버튼
+        /*
         SizedBox(
           width: 300,
           height: 50,
@@ -152,7 +150,7 @@ class _GuestSectionState extends State<GuestSection> {
               // 위의 조건문으로는 버튼을 눌렀을 때 이동할 수 없음.
               if (_validateName()) {
                 print("검사 결과");
-                String name = _nameController.text.trim();
+                String name = widget.abc.text.trim();
                 // 작성한 이름 유저의 mbti 결과 확인
                 print("기록으로 이동하는 주소 위");
                 context.go("/history", extra: name);
@@ -166,6 +164,7 @@ class _GuestSectionState extends State<GuestSection> {
           ),
         ),
         SizedBox(height: 20),
+        */
 
         // 회원가입 버튼
         SizedBox(
@@ -175,11 +174,12 @@ class _GuestSectionState extends State<GuestSection> {
             onPressed: () => context.go('/signup'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              foregroundColor: Colors.black87,
+              foregroundColor: Colors.white,
             ),
-            child: Text("회원가입하기", style: TextStyle(fontSize: 16),),
+            child: Text("회원가입하기", style: TextStyle(fontSize: 20),),
           ),
         ),
+        SizedBox(height: 10),
       ],
     );
   }
