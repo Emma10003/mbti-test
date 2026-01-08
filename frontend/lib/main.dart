@@ -18,6 +18,7 @@ import 'models/result_model.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // 1. 카카오 자바스크립트 키 초기화
+  // 키 데이터는 .env 처럼 관리.
   AuthRepository.initialize(appKey: '51d42d0567c6a7f2572338a87991a429');
   runApp(const MyApp());
 }

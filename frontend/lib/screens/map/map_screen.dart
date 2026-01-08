@@ -54,13 +54,32 @@ class _MapScreenState extends State<MapScreen> {
     // GPS 접근 가능한 권한이 존재한다면 아래 코드 실행
     // 실제 위도와 경도 데이터를 가져옴, 가져온 위치를 position 이라는 변수공간 내부에 저장.
     // position = {"latitude" : 39.3242342, "longitude : 34.2322929, ...} 와 같은 데이터들이 내부에 저장될 것.
-    Position position = await Geolocator.getCurrentPosition();
-    print("position: $position");
+    // 위치를 5초 안에 가져오지 못하면 에러를 내도록 설정.
+    // try-catch, Duration
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            locationSettings : LocationSettings(
+              accuracy: LocationAccuracy.low,   // 정확도 -> 낮게 설정
+              timeLimit: Duration(seconds: 5),  // 5초 제한
+            )
+        );
+        print("position: $position"); // Latitude: 37.569772, Longitude: 126.984281
+        
 
-    setState(() {
-      // 위도 경도 객체로 변환하여 저장.
-      _currentPosition = LatLng(position.latitude, position.longitude);
-    });
+        setState(() {
+          // 위도 경도 객체로 변환하여 저장.
+          _currentPosition = LatLng(position.latitude, position.longitude);
+        });
+        print(
+            "currentPosition: $_currentPosition"); // LatLng{latitude: 37.569772, longitude: 126.984281}
+      } catch (e) {
+        print("위치를 가져오지 못했습니다. $e");
+        // 먄약에 위치를 가져오지 못하면 이전 화면으로 되돌리거나, (1번방법)
+        // 또는 회사 위치를 임의로 지정하여 띄워주기 할 수도 있음. (2번방법)
+        setState(() {
+          _currentPosition = LatLng(34.402056, 127.108212);
+        });
+      }
   }
 
   @override
