@@ -37,7 +37,31 @@ MBTI 성격 유형 검사앱에서 사용되는 각종 설정값과 메세지를
    => 상황에 따라 선택할 수 있다. (거의 컴파일에서 사용한다는 표현이 더 적합)
  */
 class ApiConstants {
-  static const String baseUrl = 'http://localhost:8080/api';
+  /*
+  안드로이드 애뮬레이터용
+  http://10.0.2.2:8080/api
+
+  ios 시뮬레이터
+  http://localhost:8080/api
+
+  실제 기기용
+  http://192.168.x.x:8080/api
+
+  백엔드 주소
+  https://도메인.도메인/api
+
+  Chrome(web)이나 Edge(web)으로 console.log로 상황 확인하며 개발을 하고자 할 경우
+  flutter run -d chrome --web-port=개발자가원하는포트
+
+  프로젝트 루트에 .flutter 폴더 생성 후 chrome_device.json 파일 형태로
+  {
+    "port": 51093
+  }
+  과 같이 포트번호 지정.
+
+  환경변수 파일(.env)을 이용하여 constants 상태 관리를 할 수 있다.
+   */
+  static const String baseUrl = 'http://10.0.2.2:8080/api';
   static const String mbtiUrl = '/mbti';
   static const String userUrl = '/users';
   static const String submit = '$mbtiUrl/submit';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/common/constants.dart';
 import 'package:frontend/providers/auth_provider.dart';
+import 'package:frontend/services/network_service.dart';
 import 'package:frontend/widgets/home/guest_section.dart';
 import 'package:frontend/widgets/home/profile_menu.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // HomeScreen 내부에서 사용할 변수명, 함수명 작성 공간
+
+
+
   /*
   TextEditingController
   TextField TextFormField 처럼 텍스트를 제어하고 관리하는 클래스

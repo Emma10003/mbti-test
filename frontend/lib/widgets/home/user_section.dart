@@ -32,9 +32,6 @@ class _UserSectionState extends State<UserSection> {
    */
   final TextEditingController _nameController = TextEditingController();
 
-  // 에러 메세지를 담을 변수, ? = 변수공간에 null값이 들어갈 수 있다.
-  String? _errorText;
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();

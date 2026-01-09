@@ -32,6 +32,13 @@ dependencies:
   # 내 위치(GPS) 좌표를 가져오는 도구
   # 생각해보기 -> Android IOS에 위치 관련 권한 추가
   geolocator: ^13.0.1
+  tosspayments_webview_flutter: ^1.0.6
+  # dot = .   -> dotenv = .env
+  flutter_dotenv: ^5.1.0
+
+  # 스마트폰 네트워크 모바일 or 와이파이 연결되어 있는지 상태관리
+  connectivity_plus: ^6.0.5  # 네트워크 연결 체크
+  internet_connection_checker_plus: ^2.5.2  # 실제 인터넷 연결 체크
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +47,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env.development
+    - .env.product
+    - .env.local
